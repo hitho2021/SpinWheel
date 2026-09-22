@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="jquery-1.9.1.min.js"></script>
+	<title>Spin game created by Kit</title>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+		html {
+			font-size: 14px;
+			margin:0;
+			padding:0;
+		}
+		body {
+  			background-color: grey;
+			margin:0;
+			padding:0;
+			white-space: nowrap;
+		}
+
+		h2 {
+			color: #0066FF;
+			margin-left: 20px;
+		}
+
+		.header {
+			width:100%;
+			background-color: #DDDDFF;
+			margin:0;
+			padding:0;
+		}
+
+		.footer{
+			width:100%;
+			background-color: #DDDDFF;
+			margin:0;
+			padding:0;
+			text-align:center;
+			color:black;
+		}
+		.maintbl {
+			background-color: white;
+			font-size: 14px;
+			font-weight:bold;
+			border: none;
+			width:100%;
+			min-height:320px;
+			text-align:left;
+			align:left;
+			vertical-align: top;
+		}
+		.maintbl tr{
+			border: none;
+		}
+
+		.maintbl th{
+			border: none;
+			color: #2222FF;
+			vertical-align: top;
+		}
+
+		.maintbl td{
+			border: none;
+			vertical-align: top;
+		}
+
+		.cntPaneltbl {
+			background-color: white;
+			font-size: 12px;
+			border-color:black;
+			border: 1px solid black;
+			color: #3344AA;
+			border-collapse: collapse;
+		}
+		.cntPaneltbl tr{
+			border: none;
+			border-collapse: collapse;
+		}
+
+		.cntPaneltbl th{
+			border: none;
+			border-collapse: collapse;
+		}
+
+		.cntPaneltbl td{
+			border: none;
+			border-collapse: collapse;
+		}
+
+		input[type=button], input[type=submit], input[type=reset] {
+  			background-color: #4CAFFF;
+			border-color: #5CDDFF;
+			border: 0px 0px 1px 1px;
+  			color: white;
+  			padding: 2px 2px;
+  			text-decoration: none;
+  			margin: 4px 2px;
+  			cursor: pointer;
+		}
+
+		.divBox {
+  			background-color: white;
+			border: solid 1px;
+			border-color: black;
+  			height: 20px;
+  			width: 20px;
+			text-align: center;
+			align:center;
+			vertical-align: middle;
+			border-radius: 50%;
+			position:absolute;
+			top:160px;
+			left:120px;
+		}
+
+		.divBoxSelected {
+  			background-color: yellow;
+			border: solid 1px;	
+			border-color: red;
+			height: 20px;
+			width: 20px;
+			text-align: center;
+			align:center;
+			vertical-align: middle;
+			border-radius: 50%;
+			position:absolute;
+			top:160px;
+			left:120px;			
+		}
+	</style>
+
+	<script>
+		var boxesnumber=6;
+		var selectedboxes=1;
+		var minstep=boxesnumber*2;
+		var currstep=0;
+
+		function initialSpin(){
+			var boxsnumer_setting=0;
+			document.getElementById("lbl_result").innerHTML="";
+			boxsnumer_setting=document.getElementById("txt_boxes").value;
+			if (boxsnumer_setting>1 && boxsnumer_setting<=24){
+				boxesnumber=boxsnumer_setting;
+				selectedboxes=1;
+			}else{
+				alert('Spin Boxes input must between 2 to 24!');
+			}
+			document.getElementById("txt_boxes").value=boxesnumber;
+			minstep=boxesnumber*2;
+			currstep=0;
+			DrawSpin();
+		}
+
+		function DrawSpin(){
+			var iboxnumber=0;
+			var strboxnumber="";
+			jQuery('#div_wheel').html('');
+
+    			var radius = "80px";
+			var angle = 360 / boxesnumber;
+			var shiftdeg=270;
+
+			for(i=0;i<boxesnumber;i++){
+				strboxnumber=i+1;
+				
+				if (i==selectedboxes-1){
+					$('#div_wheel').append('<div id="div_Box' + strboxnumber +'" class="divBoxSelected" '
+					+ 'style="transform: rotate(' + (i*angle+shiftdeg)  +'deg) translate(' + radius + ') rotate(' + (-1*(i*angle+shiftdeg))  +'deg)' 
+					+'">' + strboxnumber + '</div>');
+				}else{
+					$('#div_wheel').append('<div id="div_Box' + strboxnumber +'" class="divBox" '
+					+ 'style="transform: rotate(' + (i*angle+shiftdeg)  +'deg) translate(' + radius + ') rotate(' + (-1*(i*angle+shiftdeg))  +'deg)' 
+					+'">' + strboxnumber + '</div>');
+				}
+			}
+
+		}
+
+		var spinstop=false;
+		function Spin(){
+			var spinresult=1;
+			var spinround=1;
+			document.getElementById("txt_boxes").value=boxesnumber;
+			spinstop=false;
+			currstep=0;
+			spinresult=Math.floor(Math.random() * boxesnumber)+1;
+			var interval = 0;
+			interval = window.setInterval(function(){
+				if (!spinstop){
+    					spinstop=SpinAnimate(spinresult) 
+				}else{
+					$("#lbl_result").html("Spin result is Box " + spinresult + "");
+					window.clearInterval(interval);
+					selectedboxes=spinresult;
+					return true;
+				}
+			}, 200);
+		}
+		
+		function SpinAnimate(spinresult){
+			selectedboxes=selectedboxes+1;
+			currstep=currstep+1;
+			if (selectedboxes>boxesnumber){
+				selectedboxes=1;
+				$("#div_Box"+ boxesnumber).removeClass('divBoxSelected');
+				$("#div_Box"+ boxesnumber).addClass('divBox');
+				$("#div_Box1").removeClass('divBox');
+				$("#div_Box1").addClass('divBoxSelected');
+			}else{
+				$("#div_Box"+ (selectedboxes-1)).removeClass('divBoxSelected');
+				$("#div_Box"+ (selectedboxes-1)).addClass('divBox');
+				$("#div_Box"+ selectedboxes).removeClass('divBox');
+				$("#div_Box"+ selectedboxes).addClass('divBoxSelected');
+			}
+			if(currstep>=minstep && spinresult==selectedboxes ){
+				return true;	
+			}
+		}
+
+		$( document ).ready( DrawSpin );
+	</script>
+</head>
+<body>
+	<div class="header">
+		<h2>Spin game</h2>
+	</div>
+	<table class="maintbl">
+	<tr>
+	<th style="width:70%;min-width:200px">
+		Wheels
+	</th>
+	<th style="width:30%">
+		Setting Panel
+	</th>
+	</tr>
+	<tr>
+	<td>
+		<div name="div_wheel" id="div_wheel" style="height:300px;width:200px;">
+		</div>
+		<input type="button" name="btn_spin" id="btn_spin" value="Spin"  /> 
+		<script>
+			document.getElementById("btn_spin").addEventListener("click", Spin);
+		</script>
+		<lable name="lbl_result" id="lbl_result" value="" />
+	</td>
+	<td>
+		<table class="cntPaneltbl">
+			<tr>
+				<td>No. of Wheels Boxes : </td>
+				<td><input type="number" name="txt_boxes" id="txt_boxes" size="2" value="6" style="width:50px" />(2 to 24)</td>
+			</tr>
+			<tr>
+				<td><input type="button" name="btn_init" id="btn_init" value="Initial Wheels" /> </td>
+				<script>
+					document.getElementById("btn_init").addEventListener("click", initialSpin);
+				</script>
+				<td></td>
+			</tr>
+		</table>
+	</td>
+	</tr>
+</table>
+<div class="footer">
+	<p>&copy; 2021 created by Hit</p>
+</div>
+</body>
+</html>
